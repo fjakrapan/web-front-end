@@ -164,7 +164,36 @@ function Product() {
     }
     
     const handleUploadExcel = async () => {
-        
+        try {
+            const fromData = new FormData();
+            fromData.append('fileExcel',fileExcel);
+
+            const res = await axios.post(config.apiPath + '/product/uploadFromExcel', fromData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': localStorage.getItem('token')
+                }
+            });
+
+            if(res.data.message === 'success'){
+                Swal.fire({
+                    title: 'upload file',
+                    text: 'upload success',
+                    icon: 'success',
+                    timer: 1000
+                });
+
+                fetchData();
+
+                document.getElementById('modalExcel_btnClose').click();
+            }
+        }catch(e){
+            Swal.fire({
+                title:'error',
+                text: e.message,
+                icon: 'error',
+            })
+        }
     }
     
     const clearFormExcel = () => {
@@ -228,6 +257,7 @@ function Product() {
                 <input value={product.price}className="form-control" onChange={e => setProduct({...product, price: e.target.value})}/>
             </div>
             <div className="mt-3">
+                <div className="mb-3">{showImage(product)}</div>
                 <div>ภาพสินค้า</div>
                 <input className="form-control" type="file" ref={refImg} onChange={e => selectedFile(e.target.files)}/>
             </div>
